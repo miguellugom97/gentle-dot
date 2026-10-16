@@ -839,6 +839,8 @@ export class ConnectorStore {
 			if (stored !== undefined) {
 				this.log("connectors.json was signed before and is missing; starting with no connectors");
 				this.onSetAside(MISSING_NOTICE);
+				this.edited = true;
+				writePrivateFile(this.file, this.recordText());
 			}
 			return;
 		}

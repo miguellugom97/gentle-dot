@@ -58,7 +58,7 @@ describe("OmniRoute Provider", () => {
 		});
 	});
 
-	it("extracts token when user pastes both URL and token", async () => {
+	it("extracts token and sets base URL when user pastes both URL and token", async () => {
 		const provider = createOmniRouteProviderConfig();
 		const login = provider.auth.apiKey?.login;
 
@@ -71,6 +71,35 @@ describe("OmniRoute Provider", () => {
 		expect(result).toEqual({
 			type: "api_key",
 			key: "sk-test-omniroute-token",
+			env: { OMNIROUTE_BASE_URL: "http://192.168.68.115:20128/v1" },
+		});
+	});
+
+	it("prompts for token if user initially enters only a base URL", async () => {
+		const provider = createOmniRouteProviderConfig();
+		const login = provider.auth.apiKey?.login;
+
+		const promptCalls: object[] = [];
+		const result = await login?.({
+			signal: new AbortController().signal,
+			prompt: async (req) => {
+				promptCalls.push(req);
+				if (promptCalls.length === 1) return "http://192.168.68.115:20128/v1";
+				return "sk-test-token-from-second-prompt";
+			},
+			notify: () => {},
+		});
+
+		expect(promptCalls).toHaveLength(2);
+		expect(promptCalls[1]).toMatchObject({
+			type: "secret",
+			message: "Enter OmniRoute API token for http://192.168.68.115:20128/v1",
+			placeholder: "sk-...",
+		});
+		expect(result).toEqual({
+			type: "api_key",
+			key: "sk-test-token-from-second-prompt",
+			env: { OMNIROUTE_BASE_URL: "http://192.168.68.115:20128/v1" },
 		});
 	});
 

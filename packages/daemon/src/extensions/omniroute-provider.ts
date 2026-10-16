@@ -197,23 +197,44 @@ export function createOmniRouteProviderConfig(
 					});
 					interaction.signal.throwIfAborted();
 					let key = entered.trim();
+					let customUrl: string | undefined;
+
 					// Handle edge-case where user pasted both URL and token separated by spaces:
 					if (key.includes(" ")) {
 						const parts = key.split(/\s+/);
+						const urlPart = parts.find((p) => p.startsWith("http://") || p.startsWith("https://"));
 						const tokenPart = parts.find((p) => p.startsWith("sk-")) ?? parts[parts.length - 1];
+						if (urlPart) customUrl = urlPart;
 						if (tokenPart) key = tokenPart;
+					} else if (key.startsWith("http://") || key.startsWith("https://")) {
+						customUrl = key;
+						const secondPrompt = await interaction.prompt({
+							type: "secret",
+							message: `Enter OmniRoute API token for ${customUrl}`,
+							placeholder: "sk-...",
+							signal: interaction.signal,
+						});
+						interaction.signal.throwIfAborted();
+						key = secondPrompt.trim();
 					}
+
 					if (!key) throw new Error("OmniRoute requires a non-empty API token");
-					return { type: "api_key", key };
+					return {
+						type: "api_key",
+						key,
+						...(customUrl ? { env: { OMNIROUTE_BASE_URL: customUrl } } : {}),
+					};
 				},
 				async resolve({ ctx, credential, signal }) {
 					signal.throwIfAborted();
 					const stored = credential?.key?.trim();
 					const key = stored || (await ctx.env("OMNIROUTE_API_KEY"))?.trim();
+					const env = credential?.env;
 					signal.throwIfAborted();
 					return key
 						? {
 								auth: { apiKey: key },
+								...(env ? { env } : {}),
 								source: stored ? "API key" : "OMNIROUTE_API_KEY",
 							}
 						: undefined;

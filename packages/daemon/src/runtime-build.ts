@@ -92,7 +92,22 @@ export async function buildRuntime(outDir: string): Promise<void> {
 	for (const name of ["approval-guard.ts", "screenshot-context.ts", "omniroute-provider.ts"]) {
 		copyFileSync(join(PACKAGE, "src", "extensions", name), join(daemon, "extensions", name));
 	}
-	const manifest = { name: "gentle-dot-runtime", private: true, type: "module", dependencies };
+	const manifest = {
+		name: "gentle-dot-runtime",
+		private: true,
+		type: "module",
+		dependencies,
+		overrides: {
+			"@earendil-works/chord": "1.0.4",
+			"@earendil-works/pi-agent-core": "1.0.4",
+			"@earendil-works/pi-ai": "1.0.4",
+			"@earendil-works/pi-codemode": "1.0.4",
+			"@earendil-works/pi-coding-agent": "1.0.4",
+			"@earendil-works/pi-mcp": "1.0.4",
+			"@earendil-works/pi-telemetry": "1.0.4",
+			"@earendil-works/pi-tui": "1.0.4",
+		},
+	};
 	writeFileSync(join(daemon, "package.json"), `${JSON.stringify(manifest, null, "\t")}\n`);
 	writeFileSync(join(outDir, "bin", "pi"), piWrapper(engineEntry()), { mode: 0o755 });
 }
