@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { loadMascot, type Mascot, saveMascot } from "../mascot.ts";
 import {
 	formatShortcut,
 	isMac,
@@ -25,6 +26,7 @@ function reasonOf(error: unknown): string {
 
 /** The desktop panel's settings (S33.1); for now, the shortcut that opens the panel. */
 export function SettingsPanel({ close }: { close: () => void }) {
+	const [mascot, setMascot] = useState<Mascot>(() => loadMascot());
 	const [language, setLanguage] = useState(() => voiceLanguage() ?? "");
 	const mac = isMac();
 	const show = (accelerator: string) => formatShortcut(accelerator, mac);
@@ -167,6 +169,23 @@ export function SettingsPanel({ close }: { close: () => void }) {
 							{label}
 						</option>
 					))}
+				</select>
+			</section>
+
+			<section className="provider-section" aria-labelledby="settings-desktop-mascot">
+				<h3 id="settings-desktop-mascot">Desktop mascot</h3>
+				<p className="muted">The character that floats on your desktop.</p>
+				<select
+					aria-label="Desktop mascot"
+					value={mascot}
+					onChange={(event) => {
+						const next = event.target.value as Mascot;
+						setMascot(next);
+						saveMascot(next);
+					}}
+				>
+					<option value="agumon">Agumon (Digimon - Free Desktop Pet)</option>
+					<option value="rose">Gentle Rose (Neon Glowing Disc)</option>
 				</select>
 			</section>
 		</section>

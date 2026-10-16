@@ -183,6 +183,11 @@ async function main() {
 		return;
 	}
 
+	const cargoBin = join(process.env.HOME ?? "", ".cargo", "bin");
+	if (existsSync(join(cargoBin, "rustc")) && !process.env.PATH?.split(":").includes(cargoBin)) {
+		process.env.PATH = `${cargoBin}:${process.env.PATH ?? ""}`;
+	}
+
 	// The Tauri CLI asks rustc for its version itself; a cargo wrapper that finds rustc on its own is not enough.
 	if (spawnSync("rustc", ["--version"]).status !== 0)
 		throw new Error(

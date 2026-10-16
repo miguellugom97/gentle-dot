@@ -4,13 +4,22 @@ import type { AgentState } from "@gentle-dot/protocol";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { DotSurface } from "../src/components/DotSurface.tsx";
+import type { Mascot } from "../src/mascot.ts";
 import { DOT_LIGHT_STROKES, ROSE_DISC_VIEWBOX } from "../src/rose/Rose.tsx";
 import { ROSE_SPARKLES, ROSE_STROKES } from "../src/rose/strokes.ts";
 
-function setup(agentState: AgentState = "idle", connected = true) {
+function setup(agentState: AgentState = "idle", connected = true, mascot: Mascot = "rose") {
 	const toggle = vi.fn();
 	const startDrag = vi.fn();
-	render(<DotSurface agentState={agentState} connected={connected} toggle={toggle} startDrag={startDrag} />);
+	render(
+		<DotSurface
+			agentState={agentState}
+			connected={connected}
+			mascot={mascot}
+			toggle={toggle}
+			startDrag={startDrag}
+		/>,
+	);
 	return { toggle, startDrag, dot: screen.getByRole("button") };
 }
 
@@ -122,5 +131,28 @@ describe("DotSurface", () => {
 		const { dot } = setup("working", false);
 		expect(dot).toHaveAccessibleName("Gentle Dot: restarting");
 		expect(dot.querySelector(".rose")).toHaveClass("rose-restarting");
+	});
+
+	it("renders Agumon in libre floating mode", () => {
+		const { dot } = setup("idle", true, "agumon");
+		expect(dot).toHaveClass("dot-libre");
+		expect(dot).toHaveClass("dot-agumon");
+		const agumon = dot.querySelector(".agumon");
+		expect(agumon).not.toBeNull();
+		expect(agumon).toHaveClass("agumon-idle");
+		const img = agumon?.querySelector("img.agumon-sprite");
+		expect(img).not.toBeNull();
+	});
+
+	it.each<[AgentState, string]>([
+		["idle", "agumon-idle"],
+		["thinking", "agumon-thinking"],
+		["working", "agumon-working"],
+		["needs_you", "agumon-needs"],
+		["restarting", "agumon-restarting"],
+		["error", "agumon-offline"],
+	])("renders Agumon %s as %s", (state, mood) => {
+		const { dot } = setup(state, true, "agumon");
+		expect(dot.querySelector(".agumon")).toHaveClass(mood);
 	});
 });

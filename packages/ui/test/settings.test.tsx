@@ -258,4 +258,13 @@ describe("changing the shortcut (S33.2, S33.3)", () => {
 		expect(await screen.findByText("⌥ Space")).toBeInTheDocument();
 		expect(screen.getByRole("button", { name: "Reset to default" })).toBeDisabled();
 	});
+
+	it("switches desktop mascot between Agumon and Rose", async () => {
+		await openSettings();
+		const select = await screen.findByRole("combobox", { name: "Desktop mascot" });
+		expect(select).toHaveValue("agumon");
+		await userEvent.selectOptions(select, "rose");
+		expect(select).toHaveValue("rose");
+		expect(localStorage.getItem("gentle-dot:mascot")).toBe("rose");
+	});
 });

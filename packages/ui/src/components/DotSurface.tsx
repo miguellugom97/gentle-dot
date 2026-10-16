@@ -1,5 +1,7 @@
 import type { AgentState } from "@gentle-dot/protocol";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Agumon } from "../agumon/Agumon.tsx";
+import { loadMascot, type Mascot, onMascotChange } from "../mascot.ts";
 import { Rose, type RoseMood } from "../rose/Rose.tsx";
 
 const LABELS: Record<AgentState, string> = {
@@ -31,27 +33,41 @@ interface DotSurfaceProps {
 	inControl?: boolean;
 	/** Yolo mode is on (S24.9): risky actions run without asking, so the rose says so. */
 	yolo?: boolean;
+	/** The mascot to display (defaults to Agumon or user preference). */
+	mascot?: Mascot;
 	toggle: () => void;
 	startDrag: () => void;
 }
 
-/** The collapsed, always-on-top rose in its black circle. A click opens the panel; a drag moves the window. */
+/** The collapsed, always-on-top mascot on desktop. A click opens the panel; a drag moves the window. */
 export function DotSurface({
 	agentState,
 	connected,
 	inControl = false,
 	yolo = false,
+	mascot: explicitMascot,
 	toggle,
 	startDrag,
 }: DotSurfaceProps) {
+	const [activeMascot, setActiveMascot] = useState<Mascot>(() => explicitMascot ?? loadMascot());
+
+	useEffect(() => {
+		if (explicitMascot) {
+			setActiveMascot(explicitMascot);
+			return;
+		}
+		return onMascotChange(setActiveMascot);
+	}, [explicitMascot]);
 	const press = useRef<{ x: number; y: number; dragging: boolean } | undefined>(undefined);
 	const state = connected ? agentState : "restarting";
 	const label = inControl ? "controlling your Mac" : LABELS[state];
 
+	const isAgumon = activeMascot === "agumon";
+
 	return (
 		<button
 			type="button"
-			className={`dot dot-${state}${inControl ? " dot-in_control" : ""}${yolo ? " dot-yolo" : ""}`}
+			className={`dot dot-${state}${inControl ? " dot-in_control" : ""}${yolo ? " dot-yolo" : ""}${isAgumon ? " dot-libre dot-agumon" : ""}`}
 			aria-label={`Gentle Dot: ${label}${yolo ? ", yolo mode on" : ""}`}
 			onPointerDown={(event) => {
 				if (event.button !== 0) return;
@@ -78,7 +94,11 @@ export function DotSurface({
 			}}
 		>
 			<span className="dot-disc" aria-hidden="true">
-				<Rose mood={inControl ? "control" : MOODS[state]} />
+				{isAgumon ? (
+					<Agumon mood={inControl ? "control" : MOODS[state]} />
+				) : (
+					<Rose mood={inControl ? "control" : MOODS[state]} />
+				)}
 			</span>
 			{state === "needs_you" ? (
 				<span className="dot-badge" aria-hidden="true">

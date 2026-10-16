@@ -242,20 +242,21 @@ describe("while the assistant controls the Mac (S24.6)", () => {
 		expect(banner).toHaveTextContent("Controlling your Mac · 25:00 left");
 	});
 
-	it("the rose shows the in-control state and goes back when the session ends", async () => {
+	it("the mascot shows the in-control state and goes back when the session ends", async () => {
 		await renderApp("?surface=dot");
 		const dot = screen.getByRole("button");
-		expect(dot.querySelector(".rose")).toHaveClass("rose-idle");
+		const mascot = () => dot.querySelector(".rose, .agumon");
+		expect(mascot()).toHaveClass(mascot()?.classList.contains("agumon") ? "agumon-idle" : "rose-idle");
 
 		await emitState({ active: true, endsAt: Date.now() + 60_000, reason: "granted" });
 		expect(dot).toHaveAccessibleName("Gentle Dot: controlling your Mac");
 		expect(dot).toHaveClass("dot-in_control");
-		expect(dot.querySelector(".rose")).toHaveClass("rose-control");
+		expect(mascot()).toHaveClass(mascot()?.classList.contains("agumon") ? "agumon-control" : "rose-control");
 
 		await emitState({ active: false, reason: "panic" });
 		expect(dot).toHaveAccessibleName("Gentle Dot: ready");
 		expect(dot).not.toHaveClass("dot-in_control");
-		expect(dot.querySelector(".rose")).toHaveClass("rose-idle");
+		expect(mascot()).toHaveClass(mascot()?.classList.contains("agumon") ? "agumon-idle" : "rose-idle");
 	});
 
 	it("styles the in-control rose and the banner with the site's tokens", () => {
