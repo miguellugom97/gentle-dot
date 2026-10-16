@@ -9,6 +9,7 @@
 			"!apps/desktop/src-tauri/gen",
 			"!odd",
 			"!build",
+			"!.atl",
 			"!.cache",
 			"!.vitest",
 			"!docs",

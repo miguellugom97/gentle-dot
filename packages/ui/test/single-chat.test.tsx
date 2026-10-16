@@ -39,7 +39,7 @@ describe("one continuous chat", () => {
 		);
 		expect(screen.queryByRole("button", { name: "New conversation" })).not.toBeInTheDocument();
 		expect(screen.queryByRole("button", { name: "Conversations" })).not.toBeInTheDocument();
-		expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Gentle Dot");
+		expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Digivice");
 		expect(container.querySelector(".chat-header .rose-glyph")).not.toBeNull();
 		for (const name of ["Accounts", "Profiles", "Hide"]) {
 			expect(screen.getByRole("button", { name })).toBeInTheDocument();

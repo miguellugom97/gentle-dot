@@ -197,7 +197,7 @@ export function ChatSurface({
 				) : (
 					<h1 className="assistant-name">
 						<RoseGlyph />
-						<span className="gradient-text">Gentle Dot</span>
+						<span className="gradient-text">Digivice</span>
 					</h1>
 				)}
 				<button type="button" className="icon" aria-label="Accounts" title="Accounts" onClick={openAccounts}>
