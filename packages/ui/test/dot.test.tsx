@@ -106,9 +106,9 @@ describe("DotSurface", () => {
 		const window = read("../../../apps/desktop/src-tauri/src/shell.rs").match(
 			/const DOT_SIZE: \(f64, f64\) = \(([\d.]+), ([\d.]+)\)/,
 		);
-		expect(window?.slice(1).map(Number)).toEqual([72, 72]);
-		expect(rule).toMatch(/\twidth: 72px;/);
-		expect(rule).toMatch(/\theight: 72px;/);
+		expect(window?.slice(1).map(Number)).toEqual([104, 104]);
+		expect(rule).toMatch(/\twidth: 104px;/);
+		expect(rule).toMatch(/\theight: 104px;/);
 	});
 
 	it.each<[AgentState, string, string]>([
