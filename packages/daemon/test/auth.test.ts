@@ -285,6 +285,14 @@ describe("createModelAuthRuntime (Pi's runtime, offline)", () => {
 		expect(nan?.auth.apiKey?.name).toBe("NaN API key");
 		expect(runtime.getProviderAuthStatus(nan?.id ?? "").configured).toBe(false);
 	});
+
+	it("lists OmniRoute with its API token sign-in", async () => {
+		const home = tempDir();
+		const runtime = await createModelAuthRuntime(home, home);
+		const omniroute = runtime.getProviders().find((provider) => provider.name === "OmniRoute");
+		expect(omniroute?.auth.apiKey?.name).toBe("OmniRoute API token");
+		expect(runtime.getProviderAuthStatus(omniroute?.id ?? "").configured).toBe(false);
+	});
 });
 
 describe("resolveAgentHome", () => {

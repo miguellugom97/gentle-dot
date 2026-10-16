@@ -22,6 +22,7 @@ import {
 	ConnectorManager,
 	type ConnectorOAuthOptions,
 	ConnectorStore,
+	OMNIROUTE_EXTENSION,
 	policyEnv,
 } from "./connectors.ts";
 import { directAccess, type EngineAccess, engineAccess } from "./engine-access.ts";
@@ -232,8 +233,8 @@ export async function startDaemon(options: DaemonOptions): Promise<DotDaemon> {
 		log,
 	});
 	connectorStore.onUpdated = () => proxy.sync();
-	// The assistant's own engine loads the approval guard for connector actions.
-	const guardArgs = options.agentHome ? ["-e", APPROVAL_GUARD] : [];
+	// The assistant's own engine loads the approval guard for connector actions and built-in provider extensions.
+	const guardArgs = options.agentHome ? ["-e", APPROVAL_GUARD, "-e", OMNIROUTE_EXTENSION] : [];
 	const supervisor = new AgentSupervisor({
 		command: options.agentCommand,
 		args: [...(options.agentArgs ?? []), ...homeArgs],

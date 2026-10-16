@@ -73,6 +73,11 @@ async function registerEngineProviders(runtime: {
 	}>("gentle-pi/lib/nan-provider.ts");
 	// A provider object, as `pi.registerProvider(config)` passes it, is a native provider.
 	runtime.registerNativeProvider(createNanProviderConfig() as never);
+
+	const { createOmniRouteProviderConfig } = await jiti.import<{
+		createOmniRouteProviderConfig: () => { id: string };
+	}>("./extensions/omniroute-provider.ts");
+	runtime.registerNativeProvider(createOmniRouteProviderConfig() as never);
 }
 
 /** Pi's ModelRuntime on the assistant's home: same auth.json format and file locking as Gentle Shell. */

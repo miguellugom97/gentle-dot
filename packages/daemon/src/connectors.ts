@@ -1723,6 +1723,11 @@ export function bundledMcpCli(env: NodeJS.ProcessEnv = process.env): McpCli {
 /** The approval guard the daemon loads into the engine. */
 export const APPROVAL_GUARD = fileURLToPath(new URL("./extensions/approval-guard.ts", import.meta.url));
 
+/** The OmniRoute provider extension the daemon loads into the engine. */
+export const OMNIROUTE_EXTENSION = fileURLToPath(
+	new URL("./extensions/omniroute-provider.ts", import.meta.url),
+);
+
 /** Why a connector action did not start; `message` is safe to show. */
 export type ConnectorRefusal = {
 	code:
